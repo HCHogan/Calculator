@@ -180,6 +180,7 @@ auto calculate_test() -> int {
   }
 
   std::cout << std::format("{:.6f}\n", evaluate("1 + 2 + 3"));
+  std::cout << std::format("{:.6f}\n", evaluate("1 * 2 + 3"));
   std::cout << std::format("{:.6f}\n", evaluate("1 +"));
 
   return 0;
@@ -195,9 +196,9 @@ int main() {
   // tests();
   // test1();
   // test2();
-  // calculator();
+  calculator();
   // calculate_test();
-  calculate_int_test();
+  // calculate_int_test();
 
   return EXIT_SUCCESS;
 }

@@ -53,47 +53,24 @@ auto scan_int(string_view expr) -> tuple<stack<double>, stack<char>> {
 
   for (auto [i, c] : ranges::zip_view(views::iota(0, static_cast<int>(expr.size())), expr | views::all)) {
     if (c == ' ') continue;
-    
+
     if (isdigit(c)) {
-      double num = 0;
-      int dot = 0;
-      while (i < expr.size() && (isdigit(c) || c == '.')) {
-        if (c == '.') {
-          dot = i;
-        } else {
-          num = num * 10 + (c - '0');
+      operands.push(c - '0');
+    } else if (std::regex_match(string(1, c), std::regex(SYMBOLS))) {
+      if (priority_int(c) > priority_int(operators.top())) {
+        operators.push(c);
+      } else {
+        while (!operators.empty() && priority_int(c) <= priority_int(operators.top())) {
+          double num2 = operands.top();
+          operands.pop();
+          double num1 = operands.top();
+          operands.pop();
+          char op = operators.top();
+          operators.pop();
+          double res = compute_int(num1, num2, op);
+          operands.push(res);
         }
-        i++;
       }
-      i--;
-      if (dot > 0) {
-        num = num / pow(10, i - dot);
-      }
-      operands.push(num);
-    } else if (c == '(') {
-      operators.push(c);
-    } else if (c == ')') {
-      while (operators.top() != '(') {
-        double b = operands.top();
-        operands.pop();
-        double a = operands.top();
-        operands.pop();
-        char op = operators.top();
-        operators.pop();
-        operands.push(compute_int(a, b, op));
-      }
-      operators.pop();
-    } else if (c == '+' || c == '-' || c == '*' || c == '/') {
-      while (!operators.empty() && priority_int(c) <= priority_int(operators.top())) {
-        double b = operands.top();
-        operands.pop();
-        double a = operands.top();
-        operands.pop();
-        char op = operators.top();
-        operators.pop();
-        operands.push(compute_int(a, b, op));
-      }
-      operators.push(c);
     }
   }
 

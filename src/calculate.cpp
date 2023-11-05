@@ -1,115 +1,114 @@
-#include <ranges>
+#include <iostream>
 #include <string>
 #include <stack>
+#include <cctype>
 #include <cmath>
 using namespace std;
 
-// 定义一个优先级函数，返回运算符的优先级
+// 定义运算符的优先级，数字越大优先级越高
 int priority(char op) {
+    if (op == '(') return 0;
     if (op == '+' || op == '-') return 1;
     if (op == '*' || op == '/') return 2;
-    return 0;
+    return -1; // 非法的运算符
 }
 
-// 定义一个计算函数，根据运算符对两个操作数进行计算
+// 计算两个操作数和一个运算符的结果
 double calculate(double a, double b, char op) {
     if (op == '+') return a + b;
     if (op == '-') return a - b;
     if (op == '*') return a * b;
     if (op == '/') return a / b;
-    return nan("");
+    return NAN; // 非法的运算符
 }
 
-// 定义一个求表达式值的函数，接受一个std::string作为输入，返回值为double
+// 求中缀表达式的值，参数是一个字符串，返回一个double
 double evaluate(string expression) {
-    // 定义两个栈，一个用于存储操作数，一个用于存储运算符
-    stack<double> operands;
-    stack<char> operators;
-
-    // 遍历表达式的每个字符
-    // for (int i = 0; i < expression.size(); i++) {
-    for (auto [i, c] : ranges::zip_view(views::iota(0, static_cast<int>(expression.size())), expression | views::all)) {
-
-        // 如果是空格，跳过
-        if (c == ' ') continue;
-
-        // 如果是数字，解析出完整的数字，并压入操作数栈
-        if (isdigit(c) || c == '.') {
+    stack<double> operands; // 存储操作数的栈
+    stack<char> operators; // 存储运算符的栈
+    int i = 0; // 遍历字符串的索引
+    while (i < expression.length()) {
+        char c = expression[i];
+        if (isspace(c)) { // 跳过空白字符
+            i++;
+            continue;
+        }
+        if (isdigit(c) || c == '.') { // 读取一个数字
             double num = 0;
-            int dot = 0; // 记录小数点的位置
-            while (i < expression.size() && (isdigit(c) || c == '.')) {
+            int dot = -1; // 小数点的位置
+            while (i < expression.length() && (isdigit(c) || c == '.')) {
                 if (c == '.') {
+                    if (dot != -1) return NAN; // 出现多个小数点，表达式不合法
                     dot = i;
                 } else {
                     num = num * 10 + (c - '0');
                 }
                 i++;
+                c = expression[i];
             }
-            i--; // 回退一位，因为循环结束时多加了一位
-            if (dot > 0) { // 如果有小数点，需要除以相应的10的幂
-                num = num / pow(10, i - dot);
+            if (dot != -1) { // 调整小数的位数
+                num = num / pow(10, i - dot - 1);
             }
-            operands.push(num);
-        }
-
-        // 如果是左括号，压入运算符栈
-        else if (c == '(') {
+            operands.push(num); // 将数字压入操作数栈
+        } else if (c == '(') { // 左括号直接压入运算符栈
             operators.push(c);
-        }
-
-        // 如果是右括号，弹出运算符栈，直到遇到左括号，对应的操作数进行计算，并压入操作数栈
-        else if (c == ')') {
+            i++;
+        } else if (c == ')') { // 右括号，弹出运算符和操作数，直到遇到左括号
             while (!operators.empty() && operators.top() != '(') {
-                double b = operands.top(); operands.pop();
-                double a = operands.top(); operands.pop();
-                char op = operators.top(); operators.pop();
-                operands.push(calculate(a, b, op));
+                char op = operators.top();
+                operators.pop();
+                if (operands.size() < 2) return NAN; // 操作数不足，表达式不合法
+                double b = operands.top();
+                operands.pop();
+                double a = operands.top();
+                operands.pop();
+                double res = calculate(a, b, op);
+                if (isnan(res)) return NAN; // 出现非法的运算符，表达式不合法
+                operands.push(res); // 将结果压入操作数栈
             }
-            if (!operators.empty() && operators.top() == '(') {
-                operators.pop(); // 弹出左括号
-            } else {
-                return nan(""); // 如果没有匹配的左括号，表达式不合法，返回nan
+            if (operators.empty()) return NAN; // 没有匹配的左括号，表达式不合法
+            operators.pop(); // 弹出左括号
+            i++;
+        } else { // 其他字符，视为运算符
+            while (!operators.empty() && priority(operators.top()) >= priority(c)) {
+                // 当栈顶运算符的优先级不低于当前运算符时，弹出运算符和操作数，计算结果
+                char op = operators.top();
+                operators.pop();
+                if (operands.size() < 2) return NAN; // 操作数不足，表达式不合法
+                double b = operands.top();
+                operands.pop();
+                double a = operands.top();
+                operands.pop();
+                double res = calculate(a, b, op);
+                if (isnan(res)) return NAN; // 出现非法的运算符，表达式不合法
+                operands.push(res); // 将结果压入操作数栈
             }
-        }
-
-        // 如果是运算符，比较其与运算符栈顶的优先级，如果高于或等于栈顶，压入运算符栈
-        // 如果低于栈顶，弹出运算符栈，对应的操作数进行计算，并压入操作数栈，重复此过程，直到栈顶优先级低于当前运算符，或栈为空，或遇到左括号
-        else if (c == '+' || c == '-' || c == '*' || c == '/') {
-            while (!operators.empty() && operators.top() != '(' && priority(c) <= priority(operators.top())) {
-                double b = operands.top(); operands.pop();
-                double a = operands.top(); operands.pop();
-                char op = operators.top(); operators.pop();
-                operands.push(calculate(a, b, op));
-            }
-            operators.push(c); // 压入当前运算符
-        }
-
-        // 如果是其他字符，表达式不合法，返回nan
-        else {
-            return nan("");
+            operators.push(c); // 将当前运算符压入运算符栈
+            i++;
         }
     }
-
-    // 遍历完表达式后，如果运算符栈不为空，依次弹出运算符栈，对应的操作数进行计算，并压入操作数栈，直到运算符栈为空
+    // 遍历完字符串后，依次弹出运算符和操作数，计算结果
     while (!operators.empty()) {
-        double b = operands.top(); operands.pop();
-        double a = operands.top(); operands.pop();
-        char op = operators.top(); operators.pop();
-        operands.push(calculate(a, b, op));
+        char op = operators.top();
+        operators.pop();
+        if (operands.size() < 2) return NAN; // 操作数不足，表达式不合法
+        double b = operands.top();
+        operands.pop();
+        double a = operands.top();
+        operands.pop();
+        double res = calculate(a, b, op);
+        if (isnan(res)) return NAN; // 出现非法的运算符，表达式不合法
+        operands.push(res); // 将结果压入操作数栈
     }
-
-    // 如果操作数栈只有一个元素，那么就是表达式的值，返回它
-    if (operands.size() == 1) {
-        return operands.top();
-    }
-
-    // 否则，表达式不合法，返回nan
-    return nan("");
+    if (operands.size() != 1) return NAN; // 操作数多余，表达式不合法
+    return operands.top(); // 返回最终的结果
 }
 
-// 定义一个测试函数，用于测试evaluate函数是否正确
-// void test(string expression) {
-//     cout << "Expression: " << expression << endl;
-//     cout << "Value: " << evaluate(expression) << endl;
-//     cout << "------------------------" << endl;
-// }
+int mytest1() {
+    // 测试用例
+    string test[] = {"(1 + (2 + 3.0) * 4.0) / 2.5", "1 + 2 * 3 - 4 / 5", "1 + 2 * (3 - 4 / 5)", "1 + 2 * (3 - 4 / 5))", "1 + 2 * (3 - 4 / 5.0", "1 + 2 * (3 - 4 / 5.0)", "1 + 2 * (3 - 4 / 5.0) + .", "1 + 2 * (3 - 4 / 5.0) + .5"};
+    for (string s : test) {
+        cout << s << " = " << evaluate(s) << endl;
+    }
+    return 0;
+}
