@@ -1,14 +1,28 @@
 # Matrix Calculator
 
-Tested under clang 17.0.4
+A simple matrix calculator written in modern c++.
 
-What a mess! usage:
+Only tested under homebrew clang 17.0.4
 
+## Build Steps:
+
+First, you need to install llvm and cmake using homebrew,
+don't use the default clang because it's too old.
 ```bash
+brew install llvm cmake
+```
+
+Next, build the project:
+```bash
+git clone git@github.com:HCHogan/Calculator.git
 cd Calculator
 mkdir build
 cd build
-cmake ..
-make
+cmake -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++ ..
+make -j8
+```
+
+Finally, run the calculator:
+```bash
 ./Calculator
 ```
