@@ -1,5 +1,7 @@
 # Matrix Calculator
 
+Tested under clang 17.0.4
+
 What a mess! usage:
 
 ```bash

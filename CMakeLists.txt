@@ -21,12 +21,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Eigen)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(Calculator main.cpp)
+file(GLOB sources src/*.cpp)
+
+add_executable(Calculator ${sources})
+
 target_link_libraries(Calculator PRIVATE Eigen3::Eigen)
 target_link_libraries(Calculator PRIVATE ftxui::dom ftxui::screen ftxui::component)
 target_include_directories(Calculator PRIVATE ${ftxui_SOURCE_DIR}/include)
