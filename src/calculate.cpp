@@ -3,7 +3,11 @@
 #include <stack>
 #include <cctype>
 #include <cmath>
+#include <ranges>
 using namespace std;
+
+namespace views = std::views;
+namespace ranges = std::ranges;
 
 // 定义运算符的优先级，数字越大优先级越高
 int priority(char op) {
@@ -27,6 +31,7 @@ double evaluate(string expression) {
     stack<double> operands; // 存储操作数的栈
     stack<char> operators; // 存储运算符的栈
     int i = 0; // 遍历字符串的索引
+
     while (i < expression.length()) {
         char c = expression[i];
         if (isspace(c)) { // 跳过空白字符
@@ -104,6 +109,8 @@ double evaluate(string expression) {
     return operands.top(); // 返回最终的结果
 }
 
+
+// ------ tests ------
 int mytest1() {
     // 测试用例
     string test[] = {"(1 + (2 + 3.0) * 4.0) / 2.5", "1 + 2 * 3 - 4 / 5", "1 + 2 * (3 - 4 / 5)", "1 + 2 * (3 - 4 / 5))", "1 + 2 * (3 - 4 / 5.0", "1 + 2 * (3 - 4 / 5.0)", "1 + 2 * (3 - 4 / 5.0) + .", "1 + 2 * (3 - 4 / 5.0) + .5"};
