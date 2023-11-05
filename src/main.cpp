@@ -149,7 +149,71 @@ void test2() {
   screen.Loop(layout);
 }
 
+void tabtest() {
+  std::vector<std::string> tab_values{
+      "tab_1",
+      "tab_2",
+      "tab_3",
+  };
+  int tab_selected = 0;
+  auto tab_toggle = Toggle(&tab_values, &tab_selected);
+
+  std::vector<std::string> tab_1_entries{
+      "Forest",
+      "Water",
+      "I don't know",
+  };
+  int tab_1_selected = 0;
+
+  std::vector<std::string> tab_2_entries{
+      "Hello",
+      "Hi",
+      "Hay",
+  };
+  int tab_2_selected = 0;
+
+  std::vector<std::string> tab_3_entries{
+      "Table",
+      "Nothing",
+      "Is",
+      "Empty",
+  };
+  int tab_3_selected = 0;
+  auto tab_container = Container::Tab(
+      {
+          Radiobox(&tab_1_entries, &tab_1_selected),
+          Radiobox(&tab_2_entries, &tab_2_selected),
+          Radiobox(&tab_3_entries, &tab_3_selected),
+      },
+      &tab_selected);
+
+  auto container = Container::Vertical({
+      tab_toggle,
+      tab_container,
+  });
+
+  auto renderer = Renderer(container, [&] {
+    return vbox({
+               tab_toggle->Render(),
+               separator(),
+               tab_container->Render(),
+           }) |
+           border;
+  });
+
+  auto screen = ScreenInteractive::TerminalOutput();
+  screen.Loop(renderer);
+}
+
 void calculator() {
+  vector<string> tab_values{
+      "normal calculator",
+      "matrix calculator",
+  };
+
+  int tab_selected = 0;
+  auto tab_toggle = Toggle(&tab_values, &tab_selected);
+
   std::string input;
   std::string output;
   Component input_component = Input(&input, "Expression");
@@ -158,13 +222,29 @@ void calculator() {
       input_component,
   });
 
-  auto renderer = Renderer(component, [&] {
-    return window(text("calculator"),
+  auto tab_container = Container::Tab(
+    {
+      Container::Vertical({
+        input_component,
+      }),
+    },
+    &tab_selected
+  );
+
+  auto container = Container::Vertical({
+      tab_toggle,
+      tab_container,
+  });
+
+  auto renderer = Renderer(container, [&] {
+    return window(text(" Matrix Calculator ") | bold,
                   vbox({
                       // hbox(text("Answer : ") )
+                      tab_toggle->Render(),
+                      separator(),
                       hbox(text("Answer : "),
                            text(std::format("{:.6f}", evaluate(input)))),
-                      hbox(text("Expression : "), input_component->Render()),
+                      hbox(text("Expression : "), tab_container->Render()),
                   }));
   });
 
@@ -175,7 +255,8 @@ void calculator() {
 auto calculate_test() -> int {
   std::vector<int> v = {1, 2, 3, 4, 5};
 
-  for (auto [i, c] : ranges::zip_view(views::iota(0, static_cast<int>(v.size())), v | views::all)) {
+  for (auto [i, c] : ranges::zip_view(
+           views::iota(0, static_cast<int>(v.size())), v | views::all)) {
     std::cout << std::format("{} and {}\n", i, c);
   }
 
@@ -199,6 +280,7 @@ int main() {
   calculator();
   // calculate_test();
   // calculate_int_test();
+  // tabtest();
 
   return EXIT_SUCCESS;
 }
