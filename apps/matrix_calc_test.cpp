@@ -38,7 +38,7 @@ int main() {
   std::string matrix1;
   std::string matrix2;
   std::string result;
-  std::vector<std::string> operations = {"add", "subtract", "multiply"};
+  std::vector<std::string> operations = {"add", "subtract", "multiply", "transpose"};
   int selected_operation = 0;
 
   auto matrix1_input = Input(&matrix1, "Enter matrix 1");
@@ -57,12 +57,6 @@ int main() {
     return window(
         text(" Matrix Calculator ") | bold,
         vbox({
-            // hbox(text("Answer : ") )
-            // tab_toggle->Render(),
-            // separator(),
-            // hbox(text("Answer : "),
-            //      text(std::format("{:.6f}", evaluate(input)))),
-            // hbox(text("Expression : "), tab_container->Render()),
             hbox({
               matrix1_input->Render(),
               separator(),

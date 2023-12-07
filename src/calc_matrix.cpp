@@ -72,7 +72,11 @@ Eigen::MatrixXd performMatrixOperation(const std::string &matrix1,
   Eigen::MatrixXd m1 = parseStringToMatrix(matrix1);
   Eigen::MatrixXd m2 = parseStringToMatrix(matrix2);
 
-  if (m1.rows() != m2.rows() || m1.cols() != m2.cols()) {
+  if ((m1.rows() != m2.rows() || m1.cols() != m2.cols()) &&
+      (op == MatrixOp::ADD || op == MatrixOp::SUBTRACT)) {
+    throw std::runtime_error("Matrices are not the same size");
+  }
+  if (op == MatrixOp::MULTIPLY && m1.cols() != m2.cols()) {
     throw std::runtime_error("Matrices are not the same size");
   }
 
@@ -83,6 +87,8 @@ Eigen::MatrixXd performMatrixOperation(const std::string &matrix1,
       return m1 - m2;
     case MatrixOp::MULTIPLY:
       return m1.cwiseProduct(m2);
+    case MatrixOp::TRANSPOSE:
+      return m1.transpose();
     default:
       throw std::runtime_error("Invalid matrix operation");
   }
@@ -106,6 +112,8 @@ MatrixOp parseIntToMatrixOp(int op) {
       return MatrixOp::SUBTRACT;
     case 2:
       return MatrixOp::MULTIPLY;
+    case 3:
+      return MatrixOp::TRANSPOSE;
     default:
       throw std::runtime_error("Invalid matrix operation");
   }
@@ -121,4 +129,3 @@ std::string toString(const Eigen::MatrixXd &matrix) {
   }
   return ss.str();
 }
-

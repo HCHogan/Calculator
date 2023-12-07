@@ -3,7 +3,8 @@
 enum class MatrixOp {
     ADD,
     SUBTRACT,
-    MULTIPLY
+    MULTIPLY,
+    TRANSPOSE,
 };
 
 Eigen::MatrixXd performMatrixOperation(const std::string& matrix1, const std::string& matrix2, MatrixOp op);
