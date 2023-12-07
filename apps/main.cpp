@@ -1,5 +1,3 @@
-#include "calc/calculate.hpp"
-#include "calc_int/calculate_int.hpp"
 #include <Eigen/Dense>
 #include <format>
 #include <ftxui/component/captured_mouse.hpp>
@@ -8,22 +6,24 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
 #include <iostream>
-#include <ranges>
+#include <range/v3/range.hpp>
+#include <range/v3/view.hpp>
 #include <string>
+
+#include "calc/calculate.hpp"
+#include "calc_int/calculate_int.hpp"
 
 using namespace ftxui;
 using Eigen::MatrixXd;
 // using std::cout;
 // using std::format;
-namespace views = std::views;
-namespace ranges = std::ranges;
+namespace views = ranges::views;
 
 class MatrixComponent : public Component {
-public:
+ public:
 };
 
 void tests() {
-
   MatrixXd m(2, 2);
   m(0, 0) = 3;
   m(1, 0) = 2.5;
@@ -206,7 +206,7 @@ void tabtest() {
 }
 
 void calculator() {
-  vector<string> tab_values{
+  std::vector<string> tab_values{
       "normal calculator",
       "matrix calculator",
   };
@@ -223,13 +223,12 @@ void calculator() {
   });
 
   auto tab_container = Container::Tab(
-    {
-      Container::Vertical({
-        input_component,
-      }),
-    },
-    &tab_selected
-  );
+      {
+          Container::Vertical({
+              input_component,
+          }),
+      },
+      &tab_selected);
 
   auto container = Container::Vertical({
       tab_toggle,
@@ -253,12 +252,12 @@ void calculator() {
 }
 
 auto calculate_test() -> int {
-  std::vector<int> v = {1, 2, 3, 4, 5};
+  std::vector<size_t> v = {1, 2, 3, 4, 5};
+  std::vector<size_t> w = {6, 7, 8, 9, 10};
 
-  for (auto [i, c] : ranges::zip_view(
-           views::iota(0, static_cast<int>(v.size())), v | views::all)) {
-    std::cout << std::format("{} and {}\n", i, c);
-  }
+  auto view1 = v | views::all;
+  auto view2 = w | views::all;
+  auto view3 = views::concat(view1, view2);
 
   std::cout << std::format("{:.6f}\n", evaluate("1 + 2 + 3"));
   std::cout << std::format("{:.6f}\n", evaluate("1 * 2 + 3"));

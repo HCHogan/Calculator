@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <format>
@@ -44,15 +45,15 @@ auto compute_int(double num1, double num2, char op) -> double {
   if (op == '-') return num1 - num2;
   if (op == '*') return num1 * num2;
   if (op == '/') return num1 / num2;
-  return NAN;
+  return nan("");
 }
 
 auto scan_int(string_view expr) -> tuple<stack<double>, stack<char>> {
   stack<double> operands;
   stack<char> operators;
 
-  for (auto [i, c] : ranges::zip_view(views::iota(0, static_cast<int>(expr.size())), expr | views::all)) {
-    if (c == ' ') continue;
+  // for (auto [i, c] : ranges::zip_view(views::iota(0, static_cast<int>(expr.size())), expr | views::all)) {
+  //   if (c == ' ') continue;
 
     // if (isdigit(c)) {
     //   operands.push(c - '0');
@@ -73,19 +74,19 @@ auto scan_int(string_view expr) -> tuple<stack<double>, stack<char>> {
     //   }
     // }
 
-    if (isdigit(c) || c == '.') {
-      double num = 0;
-      int dot = -1;
-    }
-  }
+  //   if (isdigit(c) || c == '.') {
+  //     double num = 0;
+  //     int dot = -1;
+  //   }
+  // }
 
   return {operands, operators};
 }
 
 auto evaluate_int(string expr) -> optional<int> { 
   auto [operands, operators] = scan_int(expr);
-  std::cout << std::format("operands: {}\n", operands);
-  std::cout << std::format("operators: {}\n", operators);
+  // std::cout << std::format("operands: {}\n", operands);
+  // std::cout << std::format("operators: {}\n", operators);
   return nullopt; 
 }
 

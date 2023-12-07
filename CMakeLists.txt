@@ -29,13 +29,20 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Eigen)
 
-set(CMAKE_CXX_STANDARD 26)
+FetchContent_Declare(fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(fmt)
+
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_library(calclib
   STATIC
   src/calculate.cpp
+  src/calc_matrix.cpp
 )
 target_include_directories(calclib
   PUBLIC
@@ -51,10 +58,25 @@ target_include_directories(calc_intlib
   include
 )
 
+target_link_libraries(calclib PUBLIC Eigen3::Eigen fmt::fmt)
+
 add_executable(calculator
   apps/main.cpp
 )
 target_include_directories(calculator PUBLIC ${ftxui_SOURCE_DIR}/include)
 target_link_libraries(calculator PUBLIC calclib)
-target_link_libraries(calculator PUBLIC Eigen3::Eigen)
 target_link_libraries(calculator PUBLIC ftxui::dom ftxui::screen ftxui::component)
+
+add_executable(matrix_calc_test
+  apps/matrix_calc_test.cpp
+)
+target_include_directories(matrix_calc_test PUBLIC ${ftxui_SOURCE_DIR}/include)
+target_link_libraries(matrix_calc_test PUBLIC calclib)
+target_link_libraries(matrix_calc_test PUBLIC ftxui::dom ftxui::screen ftxui::component)
+
+add_executable(paragraph
+  apps/paragraph.cpp
+)
+target_include_directories(paragraph PUBLIC ${ftxui_SOURCE_DIR}/include)
+target_link_libraries(paragraph PUBLIC calclib)
+target_link_libraries(paragraph PUBLIC ftxui::dom ftxui::screen ftxui::component)
