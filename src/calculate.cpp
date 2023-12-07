@@ -114,6 +114,7 @@ double evaluate(string expression) {
 int mytest1() {
     // 测试用例
     string test[] = {"(1 + (2 + 3.0) * 4.0) / 2.5", "1 + 2 * 3 - 4 / 5", "1 + 2 * (3 - 4 / 5)", "1 + 2 * (3 - 4 / 5))", "1 + 2 * (3 - 4 / 5.0", "1 + 2 * (3 - 4 / 5.0)", "1 + 2 * (3 - 4 / 5.0) + .", "1 + 2 * (3 - 4 / 5.0) + .5"};
+    std::move(test);
     for (string s : test) {
         cout << s << " = " << evaluate(s) << endl;
     }

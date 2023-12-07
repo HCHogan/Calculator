@@ -1,5 +1,5 @@
-#include "calculate.hpp"
-#include "calculate_int.hpp"
+#include "calc/calculate.hpp"
+#include "calc_int/calculate_int.hpp"
 #include <Eigen/Dense>
 #include <format>
 #include <ftxui/component/captured_mouse.hpp>
@@ -267,11 +267,11 @@ auto calculate_test() -> int {
   return 0;
 }
 
-auto calculate_int_test() -> int {
-  evaluate_int("1 + 2 + 3");
-  // evaluate_int("(1 + (2 * 3)) / 2.5");
-  return 0;
-}
+// auto calculate_int_test() -> int {
+//   evaluate_int("1 + 2 + 3");
+//   // evaluate_int("(1 + (2 * 3)) / 2.5");
+//   return 0;
+// }
 
 int main() {
   // tests();

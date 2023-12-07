@@ -44,7 +44,7 @@ auto compute_int(double num1, double num2, char op) -> double {
   if (op == '-') return num1 - num2;
   if (op == '*') return num1 * num2;
   if (op == '/') return num1 / num2;
-  return nan("");
+  return NAN;
 }
 
 auto scan_int(string_view expr) -> tuple<stack<double>, stack<char>> {
@@ -54,23 +54,28 @@ auto scan_int(string_view expr) -> tuple<stack<double>, stack<char>> {
   for (auto [i, c] : ranges::zip_view(views::iota(0, static_cast<int>(expr.size())), expr | views::all)) {
     if (c == ' ') continue;
 
-    if (isdigit(c)) {
-      operands.push(c - '0');
-    } else if (std::regex_match(string(1, c), std::regex(SYMBOLS))) {
-      if (priority_int(c) > priority_int(operators.top())) {
-        operators.push(c);
-      } else {
-        while (!operators.empty() && priority_int(c) <= priority_int(operators.top())) {
-          double num2 = operands.top();
-          operands.pop();
-          double num1 = operands.top();
-          operands.pop();
-          char op = operators.top();
-          operators.pop();
-          double res = compute_int(num1, num2, op);
-          operands.push(res);
-        }
-      }
+    // if (isdigit(c)) {
+    //   operands.push(c - '0');
+    // } else if (std::regex_match(string(1, c), std::regex(SYMBOLS))) {
+    //   if (priority_int(c) > priority_int(operators.top())) {
+    //     operators.push(c);
+    //   } else {
+    //     while (!operators.empty() && priority_int(c) <= priority_int(operators.top())) {
+    //       double num2 = operands.top();
+    //       operands.pop();
+    //       double num1 = operands.top();
+    //       operands.pop();
+    //       char op = operators.top();
+    //       operators.pop();
+    //       double res = compute_int(num1, num2, op);
+    //       operands.push(res);
+    //     }
+    //   }
+    // }
+
+    if (isdigit(c) || c == '.') {
+      double num = 0;
+      int dot = -1;
     }
   }
 

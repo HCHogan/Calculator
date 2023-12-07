@@ -1,5 +1,13 @@
-cmake_minimum_required(VERSION 3.26)
-project(Calculator)
+# Case insensitive, so the common practice is to use the lower case.
+cmake_minimum_required(VERSION 3.7...3.27)
+
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+  cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
+
+project(Calculator VERSION 1.0
+                 DESCRIPTION "Very nice project"
+                 LANGUAGES CXX)
 
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
@@ -23,13 +31,30 @@ FetchContent_MakeAvailable(Eigen)
 
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-file(GLOB sources src/*.cpp)
+add_library(calclib
+  STATIC
+  src/calculate.cpp
+)
+target_include_directories(calclib
+  PUBLIC
+  include
+)
 
-add_executable(Calculator ${sources})
+add_library(calc_intlib
+  STATIC
+  src/calculate_int.cpp
+)
+target_include_directories(calc_intlib
+  PUBLIC
+  include
+)
 
-target_link_libraries(Calculator PRIVATE Eigen3::Eigen)
-target_link_libraries(Calculator PRIVATE ftxui::dom ftxui::screen ftxui::component)
-target_include_directories(Calculator PRIVATE ${ftxui_SOURCE_DIR}/include)
+add_executable(calculator
+  apps/main.cpp
+)
+target_include_directories(calculator PUBLIC ${ftxui_SOURCE_DIR}/include)
+target_link_libraries(calculator PUBLIC calclib)
+target_link_libraries(calculator PUBLIC Eigen3::Eigen)
+target_link_libraries(calculator PUBLIC ftxui::dom ftxui::screen ftxui::component)
