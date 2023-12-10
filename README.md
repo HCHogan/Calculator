@@ -24,5 +24,5 @@ make -j8
 
 Finally, run the calculator:
 ```bash
-./Calculator
+./matrix_calc_test
 ```

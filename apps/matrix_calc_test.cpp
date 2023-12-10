@@ -6,22 +6,6 @@
 
 using namespace ftxui;
 
-// Element LogDisplayer::RenderLines(const std::vector<std::string>& lines) {
-//     Elements list;
-//
-//     for (auto& line : lines) {
-//       Decorator line_decorator =  nothing;
-//       if (index++ == selected_) {
-//         if (Focused())
-//           line_decorator = focus | inverted;
-//         else
-//           line_decorator = focus;
-//       }
-//       list.push_back(text(line) | line_decorator)
-//    }
-//    return vbox(std::move(list)) | frame | border;
-// }
-
 Element MatrixDisplayer(const Eigen::MatrixXd& matrix) {
   Elements list;
   for (int i = 0; i < matrix.rows(); ++i) {
